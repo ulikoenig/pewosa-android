@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".MainActivity">
+    <item
+        android:id="@+id/action_reload"
+        android:icon="@android:drawable/ic_popup_sync"
+        android:orderInCategory="201"
+        android:title="Reload"
+        android:onClick="reloadWebview"
+        app:showAsAction="ifRoom"></item>
+    <item
+        android:id="@+id/action_settings"
+        android:orderInCategory="100"
+        android:title="Einstellungen"
+        app:showAsAction="always"
+        android:icon="@android:drawable/ic_menu_preferences"
+        android:enabled="false"
+        android:visible="true"
+        android:onClick="openSettings" />
+
+
+</menu>
