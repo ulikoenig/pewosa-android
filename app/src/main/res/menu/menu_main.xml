@@ -9,7 +9,7 @@
         android:orderInCategory="201"
         android:title="Reload"
         android:onClick="reloadWebview"
-        app:showAsAction="ifRoom"></item>
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/action_settings"
         android:orderInCategory="100"

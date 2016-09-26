@@ -96,8 +96,10 @@ public class MainActivity extends AppCompatActivity {
 
 
         setSupportActionBar(mToolbar);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+            getSupportActionBar().setHomeButtonEnabled(true);
+        } else Log.e("pewosa","ManyActivity.onCreate: mToolbar == null");
 
 
         ActionBar actionBar = getActionBar();
@@ -113,18 +115,20 @@ public class MainActivity extends AppCompatActivity {
         // Log and toast
 
         if (token != null) {
-            Log.d("firebase", token.toString());
+            Log.d("firebase", token);
         } else {
             Log.d("firebase", "token==NULL!");
         }
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                loadHome(v);
-            }
-        });
+        if (toolbar != null) {
+            toolbar.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    loadHome(v);
+                }
+            });
+        } else Log.e("pewosa","ManyActivity.onCreate: toolbar == null");
     }
 
 
@@ -157,7 +161,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
             Log.d("pewosa", "onNewIntent extras == null");
         }
-  }
+    }
 
 
     public void loadHome(View v) {

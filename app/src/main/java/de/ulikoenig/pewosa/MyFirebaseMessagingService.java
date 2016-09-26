@@ -78,7 +78,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             }
             if (remoteMessage.getData().get("msgtype").equals("removeSecondReleaseRequest")) {
                 int id = Integer.parseInt(remoteMessage.getData().get("id"));
-                removeReleaseRequest(id*(-1));
+                removeReleaseRequest(id * (-1));
             }
         }
 
@@ -93,38 +93,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         }
         return id;
     }
-    // [END receive_message]
-
-
-//    /**
-//     * Create and show a simple notification containing the received FCM message.
-//     *
-//     * @param messageBody FCM message body received.
-//     */
-//    private void sendNotification(String messageBody) {
-//        Intent intent = new Intent(this, MainActivity.class);
-//        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
-//                PendingIntent.FLAG_ONE_SHOT);
-//
-//        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-//        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
-//                .setSmallIcon(R.drawable.ic_stat_ic_notification)
-//                .setContentTitle("FCM Message")
-//                .setContentText(messageBody)
-//                .setAutoCancel(true)
-//                .setSound(defaultSoundUri)
-//                .setContentIntent(pendingIntent);
-//
-//        NotificationManager notificationManager =
-//                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-//
-//        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
-//    }
-
-
-
-
 
 
     private void newFirstReleaseRequest(String titel, int id) {
@@ -132,10 +100,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         intent.putExtra("NotificationMessageType", "newFirstReleaseRequest");
         intent.putExtra("NotificationMessageID", id);
         intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, id, intent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
-        long[] vibrate = {0, 300, 1000,150,1000,300 };
+        long[] vibrate = {0, 300, 1000, 150, 1000, 300};
 
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
@@ -146,12 +113,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 .setSound(defaultSoundUri)
                 .setContentIntent(pendingIntent)
                 .setVibrate(vibrate);
-
-
-//        Intent notificationIntent = new Intent(this, MainActivity.class);
-//        PendingIntent contentIntent = PendingIntent.getActivity(this, id, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-//        notificationBuilder.setContentIntent(contentIntent);
-
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(id, notificationBuilder.build());
@@ -163,10 +124,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         intent.putExtra("NotificationMessageType", "newSecondReleaseRequest");
         intent.putExtra("NotificationMessageID", id);
         intent.putExtra("firstReleaseingUsername", firstReleaseingUsername);
-        long[] vibrate = {0, 150, 1000,300,1000,150 };
+        long[] vibrate = {0, 150, 1000, 300, 1000, 150};
 
         intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, id*(-1), intent,
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, id * (-1), intent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
 
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
@@ -181,7 +142,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.notify(id*(-1), notificationBuilder.build());
+        notificationManager.notify(id * (-1), notificationBuilder.build());
     }
 
     private void removeReleaseRequest(int id) {
@@ -189,6 +150,4 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancel(id);
     }
-
-
 }
