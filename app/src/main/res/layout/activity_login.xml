@@ -70,6 +70,26 @@
                 android:text="@string/action_sign_in"
                 android:textStyle="bold" />
 
+            <TextView
+                android:text="Klingelton:"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/textView2" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/ringtone"
+                android:textAppearance="@android:style/TextAppearance.Material.Large"
+                android:textSize="22sp" />
+
+            <Button
+                android:text="Klingelton auswählen"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/ringtoneBtn"
+                android:onClick="selectRingtone" />
+
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

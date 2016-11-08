@@ -3,20 +3,17 @@ package de.ulikoenig.pewosa;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.LoaderManager.LoaderCallbacks;
-import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.ContactsContract;
-import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -27,27 +24,23 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.google.firebase.messaging.FirebaseMessaging;
 
-import static android.Manifest.permission.READ_CONTACTS;
 
 /**
  * A login screen that offers login via email/password.
  */
 public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<Cursor> {
 
-    /**
-     * Id to identity READ_CONTACTS permission request.
-     */
-    private static final int REQUEST_READ_CONTACTS = 0;
-
-    /**
+     /**
      * A dummy authentication store containing known user names and passwords.
      * TODO: remove after connecting to a real authentication system.
      */
 
     private static final String PREFS_NAME = "de.ulikoenig.pewosa.settings";
+    public static final String RINGTONE = "ringtone";
+    public static final String USERNAME = "username";
+    public static final String PASSWORD = "password";
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
@@ -58,8 +51,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
+    private TextView mRingtoneView;
     private String username;
     private String password;
+    private String chosenRingtone;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,18 +63,27 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
 
         SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-        username = settings.getString("username", "");
-        password = settings.getString("password", "");
+        username = settings.getString(USERNAME, "");
+        password = settings.getString(PASSWORD, "");
+        chosenRingtone = settings.getString(RINGTONE, "");
 
         // Set up the login form.
         mEmailView = (TextView) findViewById(R.id.username);
         assert mEmailView != null;
         mEmailView.setText(username);
-        populateAutoComplete();
+
 
         mPasswordView = (EditText) findViewById(R.id.password);
         assert mPasswordView != null;
         mPasswordView.setText(password);
+
+        mRingtoneView = (TextView) findViewById(R.id.ringtone);
+        assert mRingtoneView != null;
+        if ((chosenRingtone != null) && (chosenRingtone != "")) {
+            String ringToneTitle = RingtoneManager.getRingtone(this, Uri.parse(chosenRingtone)).getTitle(this);
+            mRingtoneView.setText(ringToneTitle);
+        }
+
 
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -105,48 +109,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         mProgressView = findViewById(R.id.login_progress);
     }
 
-    private void populateAutoComplete() {
-        if (!mayRequestContacts()) {
-            return;
-        }
 
-        getLoaderManager().initLoader(0, null, this);
-    }
 
-    private boolean mayRequestContacts() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            return true;
-        }
-        if (checkSelfPermission(READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
-            return true;
-        }
-        if (shouldShowRequestPermissionRationale(READ_CONTACTS)) {
-            Snackbar.make(mEmailView, R.string.permission_rationale, Snackbar.LENGTH_INDEFINITE)
-                    .setAction(android.R.string.ok, new View.OnClickListener() {
-                        @Override
-                        @TargetApi(Build.VERSION_CODES.M)
-                        public void onClick(View v) {
-                            requestPermissions(new String[]{READ_CONTACTS}, REQUEST_READ_CONTACTS);
-                        }
-                    });
-        } else {
-            requestPermissions(new String[]{READ_CONTACTS}, REQUEST_READ_CONTACTS);
-        }
-        return false;
-    }
 
-    /**
-     * Callback received when a permissions request has been completed.
-     */
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        if (requestCode == REQUEST_READ_CONTACTS) {
-            if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                populateAutoComplete();
-            }
-        }
-    }
 
 
     /**
@@ -219,31 +184,15 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         }
     }
 
+
     @Override
-    public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-        return new CursorLoader(this,
-                // Retrieve data rows for the device user's 'profile' contact.
-                Uri.withAppendedPath(ContactsContract.Profile.CONTENT_URI,
-                        ContactsContract.Contacts.Data.CONTENT_DIRECTORY), ProfileQuery.PROJECTION,
-
-                // Select only email addresses.
-                ContactsContract.Contacts.Data.MIMETYPE +
-                        " = ?", new String[]{ContactsContract.CommonDataKinds.Email
-                .CONTENT_ITEM_TYPE},
-
-                // Show primary email addresses first. Note that there won't be
-                // a primary email address if the user hasn't specified one.
-                ContactsContract.Contacts.Data.IS_PRIMARY + " DESC");
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        return null;
     }
 
     @Override
-    public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
-        List<String> emails = new ArrayList<>();
-        cursor.moveToFirst();
-        while (!cursor.isAfterLast()) {
-            emails.add(cursor.getString(ProfileQuery.ADDRESS));
-            cursor.moveToNext();
-        }
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+
     }
 
     @Override
@@ -252,15 +201,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     }
 
 
-    private interface ProfileQuery {
-        String[] PROJECTION = {
-                ContactsContract.CommonDataKinds.Email.ADDRESS,
-                ContactsContract.CommonDataKinds.Email.IS_PRIMARY,
-        };
-
-        int ADDRESS = 0;
-        int IS_PRIMARY = 1;
-    }
 
     /**
      * Represents an asynchronous login/registration task used to authenticate
@@ -283,9 +223,16 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             Log.d("pewosaSettings", "doInBackground");
             SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
             SharedPreferences.Editor editor = settings.edit();
-            editor.putString("username", mEmail);
-            editor.putString("password", mPassword);
+            editor.putString(USERNAME, mEmail);
+            editor.putString(PASSWORD, mPassword);
             editor.commit();
+
+            if ((mEmail != null)&&(mEmail != "")) {
+                FirebaseMessaging.getInstance().subscribeToTopic("user" + mEmail);
+                Log.d("PeWoSa", "Push - listening to: " + mEmail);
+            } else {
+                Log.d("PeWoSa", "Push - NOT listening - username not set");
+            }
             return true;
         }
 
@@ -317,6 +264,54 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         setContentView(R.layout.activity_main);
         Intent i = new Intent(getBaseContext(), MainActivity.class);
         this.startActivity(i);
+    }
+
+
+    //Klingelton
+    public void selectRingtone(View v) {
+        Log.d("pewosaSettings", "selectRingtone");
+        Intent intent = new Intent(RingtoneManager.ACTION_RINGTONE_PICKER);
+        intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_NOTIFICATION);
+        intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TITLE, "Select Tone");
+        Uri parse = null;
+        if (this.chosenRingtone != null){
+            parse = Uri.parse(this.chosenRingtone);
+        }
+        intent.putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI, parse);
+        this.startActivityForResult(intent, 5);
+    }
+
+    @Override
+    protected void onActivityResult(final int requestCode, final int resultCode, final Intent intent)
+    {
+        if (resultCode == Activity.RESULT_OK && requestCode == 5)
+        {
+            Log.d("pewosaSettings", "selectRingtone-done");
+            Uri uri = intent.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI);
+
+            if (uri != null)
+            {
+                this.chosenRingtone = uri.toString();
+                Log.d("pewosaSettings", "selected Ringtone:"+this.chosenRingtone);
+                SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+                SharedPreferences.Editor editor = settings.edit();
+                editor.putString(RINGTONE, this.chosenRingtone);
+                editor.commit();
+                String ringToneTitle = RingtoneManager.getRingtone(this, Uri.parse(chosenRingtone)).getTitle(this);
+                Log.d("pewosaSettings", "selected Ringtone title:"+ringToneTitle);
+                mRingtoneView.setText(ringToneTitle);
+            }
+            else
+            {
+                this.chosenRingtone = null;
+                SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+                SharedPreferences.Editor editor = settings.edit();
+                editor.remove(RINGTONE);
+                editor.commit();
+                mRingtoneView.setText("");
+            }
+        }
+
     }
 
 

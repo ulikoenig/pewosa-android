@@ -129,6 +129,15 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
         } else Log.e("pewosa","ManyActivity.onCreate: toolbar == null");
+
+
+
+        if ((username != null)&&(username != "")) {
+            FirebaseMessaging.getInstance().subscribeToTopic("user" + username);
+            Log.d("PeWoSa", "Push - listening to: " + username);
+        } else {
+            Log.d("PeWoSa", "Push - NOT listening - username not set");
+        }
     }
 
 
